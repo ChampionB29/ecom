@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium tech and lifestyle products">
+    <title>Champ | Premium Tech Accessories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <a href="/contact.html">Contact</a>
+
+                <div class="auth-links" id="auth-links">
+                    <!-- Injected by auth.js based on login state -->
+                </div>
+
+                <a href="/cart.html" class="cart-icon" aria-label="Cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
+                <div class="hero-text-content">
+                    <span class="badge">New Arrivals</span>
+                    <h1 class="hero-title">Elevate Your Everyday Tech.</h1>
+                    <p class="hero-subtitle">Discover premium lifestyle accessories thoughtfully designed for the modern
+                        professional.</p>
+                    <div class="hero-actions">
+                        <a href="/products.html" class="btn btn-primary">Shop Collection <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <!-- Updated to Carousel Structure -->
+                <div class="hero-carousel-wrapper">
+                    <div class="glass-orb orb-1"></div>
+                    <div class="glass-orb orb-2"></div>
+                    <div class="carousel-container" id="hero-carousel">
+                        <!-- Default Slide -->
+                        <div class="carousel-slide active">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800"
+                                alt="Premium Headphones" class="hero-image">
+                        </div>
+                        <!-- Additional Slides (Hidden by default, JS controls active state) -->
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=800"
+                                alt="Samsung S21 Ultra" class="hero-image">
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=800"
+                                alt="Vivo X100 Pro" class="hero-image">
+                        </div>
+                    </div>
+                    <!-- Carousel Controls -->
+                    <div class="carousel-indicators" id="carousel-indicators">
+                        <span class="indicator active" data-index="0"></span>
+                        <span class="indicator" data-index="1"></span>
+                        <span class="indicator" data-index="2"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Categories (Static representation) -->
+        <section class="featured-categories container">
+            <div class="section-header">
+                <h2>Shop by Category</h2>
+            </div>
+            <div class="category-grid">
+                <a href="/products.html" class="category-card">
+                    <div class="category-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=400"
+                            alt="Smartwatches">
+                    </div>
+                    <div class="category-info">
+                        <h3>Wearables</h3>
+                        <span>Explore -></span>
+                    </div>
+                </a>
+                <a href="/products.html" class="category-card">
+                    <div class="category-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?auto=format&fit=crop&q=80&w=400"
+                            alt="Accessories">
+                    </div>
+                    <div class="category-info">
+                        <h3>Accessories</h3>
+                        <span>Explore -></span>
+                    </div>
+                </a>
+                <a href="/products.html" class="category-card">
+                    <div class="category-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&q=80&w=400"
+                            alt="Gaming">
+                    </div>
+                    <div class="category-info">
+                        <h3>Gaming</h3>
+                        <span>Explore -></span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Products Container -->
+        <section class="featured-products container">
+            <div class="section-header">
+                <h2>Trending Now</h2>
+                <a href="/products.html" class="view-all">View All Products</a>
+            </div>
+            <div id="featured-products-container" class="product-grid">
+                <!-- Products will be injected here via app.js -->
+                <div class="loading-spinner"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo">CHAMP.</a>
+                <p>Curated premium technology and accessories for the modern lifestyle.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Shop</h4>
+                <a href="/products.html">All Products</a>
+                <a href="#">New Arrivals</a>
+                <a href="#">Featured</a>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <a href="#">About Us</a>
+                <a href="/contact.html">Contact</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 Champ Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+
+</html>

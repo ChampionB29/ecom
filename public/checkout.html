@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Champ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+            <nav class="nav-links">
+                <a href="/cart.html"><i class="fas fa-arrow-left"></i> Back to Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-container glass-panel" style="max-width: 600px;">
+            <div class="auth-header">
+                <h2>Checkout</h2>
+                <p>Complete your order</p>
+            </div>
+
+            <div id="checkout-message" class="form-message"></div>
+
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <input type="text" class="form-control" placeholder="123 Main St" required
+                        style="margin-bottom: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <input type="text" class="form-control" placeholder="City" required>
+                        <input type="text" class="form-control" placeholder="Zip Code" required>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 24px;">
+                    <label>Payment Method</label>
+                    <div
+                        style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--border-radius-sm); margin-bottom: 24px;">
+                        <i class="far fa-credit-card"></i> Credit Card (Mock)
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <p style="text-align:center; color: var(--text-secondary);">By clicking complete, your cart will be
+                        cleared.</p>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary w-100"
+                    style="width: 100%; font-size: 1.1rem; padding: 16px;">
+                    <i class="fas fa-lock"></i> Complete Order
+                </button>
+            </form>
+
+            <div id="success-state" style="display:none; text-align: center; padding: 40px 0;">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--success); margin-bottom: 24px;"></i>
+                <h2>Order Confirmed!</h2>
+                <p>Thank you for shopping with CHAMP.</p>
+                <a href="/products.html" class="btn btn-outline" style="margin-top: 24px;">Continue Shopping</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.getUser();
+            if (!user) return;
+
+            const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('checkout-message');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const response = await fetch(`/api/cart/${user.id}/checkout`, { method: 'POST' });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('checkout-form').style.display = 'none';
+                    document.getElementById('success-state').style.display = 'block';
+                    // Update global UI count since we bypassed app.js
+                    if (document.getElementById('cart-count')) document.getElementById('cart-count').innerText = '0';
+                } else {
+                    msg.className = 'form-message error';
+                    msg.innerText = data.message || 'Checkout failed';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-lock"></i> Complete Order';
+                }
+            } catch (error) {
+                msg.className = 'form-message error';
+                msg.innerText = 'Network error during checkout';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-lock"></i> Complete Order';
+            }
+        });
+    </script>
+</body>
+
+</html>

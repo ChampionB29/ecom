@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Wishlist | Champ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .wishlist-container {
+            padding: 40px 0 80px;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .empty-wishlist-message {
+            text-align: center;
+            padding: 60px 0;
+            display: none;
+        }
+
+        .remove-wishlist-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-wishlist-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <div class="auth-links" id="auth-links"></div>
+                <a href="/cart.html" class="cart-icon"><i class="fas fa-shopping-bag"></i><span class="cart-count"
+                        id="cart-count">0</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container wishlist-container">
+        <h1>Your Wishlist</h1>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Items you've saved for later.</p>
+
+        <div id="wishlist-content" class="wishlist-grid" style="display: none;">
+            <!-- Injected via JS -->
+        </div>
+
+        <div id="empty-wishlist-message" class="empty-wishlist-message">
+            <i class="fas fa-heart" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 24px;"></i>
+            <h2>Your wishlist is empty</h2>
+            <p>Save items you love here to easily find them later.</p>
+            <a href="/products.html" class="btn btn-primary" style="margin-top: 24px;">Explore Products</a>
+        </div>
+
+        <div id="loading" class="loading-spinner" style="margin-top: 60px;"></div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = auth.getUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            const wishlistContent = document.getElementById('wishlist-content');
+            const emptyWishlistMsg = document.getElementById('empty-wishlist-message');
+            const loading = document.getElementById('loading');
+
+            try {
+                // Fetch wishlist items
+                const res = await fetch(`/api/wishlist`);
+                if (res.status === 401) return auth.handleSessionTimeout();
+                const items = await res.json();
+
+                if (items.length === 0) {
+                    loading.style.display = 'none';
+                    emptyWishlistMsg.style.display = 'block';
+                    return;
+                }
+
+                let html = '';
+
+                items.forEach(product => {
+                    html += `
+                        <div class="product-card">
+                            <div class="product-img-wrapper">
+                                <img src="${product.image}" alt="${product.name}">
+                            </div>
+                            <div class="product-info">
+                                <h3>${product.name}</h3>
+                                <div class="product-price" style="margin-bottom: 12px;">₹${product.price.toLocaleString('en-IN')}</div>
+                                
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-primary" style="flex: 1;" onclick="addToCart('${product.id}')">
+                                        <i class="fas fa-shopping-cart"></i> Move to Cart
+                                    </button>
+                                </div>
+                                <button class="remove-wishlist-btn" onclick="removeFromWishlist('${product.id}')" title="Remove from Wishlist">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                wishlistContent.innerHTML = html;
+                loading.style.display = 'none';
+                wishlistContent.style.display = 'grid';
+
+            } catch (error) {
+                console.error("Error loading wishlist", error);
+                loading.style.display = 'none';
+                emptyWishlistMsg.innerHTML = '<h2>Failed to load wishlist</h2>';
+                emptyWishlistMsg.style.display = 'block';
+            }
+        });
+
+        async function removeFromWishlist(productId) {
+            try {
+                const res = await fetch(`/api/wishlist/${productId}`, { method: 'DELETE' });
+                if (res.status === 401) return auth.handleSessionTimeout();
+                window.location.reload();
+            } catch (e) { console.error('Error removing item', e); }
+        }
+    </script>
+</body>
+
+</html>

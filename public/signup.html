@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Champ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <div class="auth-links" id="auth-links"></div>
+                <a href="/cart.html" class="cart-icon"><i class="fas fa-shopping-bag"></i><span class="cart-count"
+                        id="cart-count">0</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-container glass-panel">
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join Aura for a premium shopping experience</p>
+            </div>
+
+            <div id="signup-message" class="form-message"></div>
+
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-control" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" required placeholder="you@example.com">
+                </div>
+                <div class="form-group" style="position: relative;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                    <i class="fas fa-eye" id="togglePassword"
+                        style="position: absolute; right: 15px; top: 43px; cursor: pointer; color: var(--text-secondary);"></i>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" style="width: 100%;">Create Account</button>
+            </form>
+
+            <div class="auth-redirect">
+                Already have an account? <a href="/login.html">Sign in</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = passwordInput.value;
+            const messageEl = document.getElementById('signup-message');
+
+            const result = await auth.signup(name, email, password);
+            if (result.success) {
+                window.location.href = '/';
+            } else {
+                messageEl.className = 'form-message error';
+                messageEl.innerText = result.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products | Champ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .page-header {
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html" class="active">Products</a>
+                <a href="/contact.html">Contact</a>
+                <div class="auth-links" id="auth-links"></div>
+                <a href="/cart.html" class="cart-icon"><i class="fas fa-shopping-bag"></i><span class="cart-count"
+                        id="cart-count">0</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="container">
+            <div class="page-header">
+                <h1>All Products</h1>
+                <p>Discover our complete collection of premium gear.</p>
+            </div>
+
+            <div class="filters">
+                <button class="btn btn-outline">All</button>
+                <button class="btn btn-outline" style="border-color:transparent">Electronics</button>
+                <button class="btn btn-outline" style="border-color:transparent">Accessories</button>
+            </div>
+
+            <div id="all-products-container" class="product-grid" style="margin-bottom: 80px;">
+                <div class="loading-spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <a href="/" class="logo">CHAMP.</a>
+                <p>Curated premium technology and accessories for the modern lifestyle.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Champ Technologies. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('all-products-container');
+            const products = await fetchProducts();
+
+            const render = (list) => {
+                if (list.length > 0) {
+                    container.innerHTML = list.map(p => renderProductCard(p)).join('');
+                } else {
+                    container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No products found.</p>';
+                }
+            };
+
+            render(products);
+
+            // Electronics IDs
+            const electronicsIds = ['p7', 'p11', 'p12'];
+
+            // Setup Filter Buttons
+            const filterBtns = document.querySelectorAll('.filters button');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Reset styling
+                    filterBtns.forEach(b => {
+                        b.style.borderColor = 'transparent';
+                        b.style.background = 'transparent';
+                    });
+                    
+                    // Active styling
+                    e.target.style.borderColor = 'var(--border-color)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+
+                    const filter = e.target.innerText.trim();
+                    if (filter === 'All') {
+                        render(products);
+                    } else if (filter === 'Electronics') {
+                        render(products.filter(p => electronicsIds.includes(p.id)));
+                    } else if (filter === 'Accessories') {
+                        render(products.filter(p => !electronicsIds.includes(p.id)));
+                    }
+                });
+            });
+            
+            // Set initial 'All' button style
+            if(filterBtns.length > 0) {
+                filterBtns[0].style.borderColor = 'var(--border-color)';
+                filterBtns[0].style.background = 'rgba(255, 255, 255, 0.05)';
+            }
+        });
+    </script>
+</body>
+
+</html>

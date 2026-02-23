@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Champ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .cart-container {
+            padding: 40px 0 80px;
+        }
+
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cart-items {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-md);
+            padding: 24px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 24px;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .item-price {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity input {
+            width: 50px;
+            text-align: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .remove-btn {
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .remove-btn:hover {
+            color: #f87171;
+        }
+
+        .cart-summary {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-md);
+            padding: 24px;
+            height: fit-content;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+            color: var(--accent-color);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            margin: 10% auto;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-glass);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 24px;
+            top: 24px;
+            color: var(--text-secondary);
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">CHAMP.</a>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <div class="auth-links" id="auth-links"></div>
+                <a href="/cart.html" class="cart-icon"><i class="fas fa-shopping-bag"></i><span class="cart-count"
+                        id="cart-count">0</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container cart-container">
+        <h1 style="margin-bottom: 40px;">Your Cart</h1>
+
+        <div id="cart-content" class="cart-grid" style="display: none;">
+            <div class="cart-items" id="cart-items-list">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal-amount">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="total-amount">₹0</span>
+                </div>
+
+                <!-- NEW CHECKOUT OPTIONS MULTI-STEP REMOVED - NOW IN MODAL -->
+                <button class="btn btn-primary checkout-btn" onclick="openCheckoutModal()">Proceed to Checkout</button>
+            </div>
+        </div>
+
+        <div id="empty-cart-message" style="text-align: center; padding: 60px 0; display: none;">
+            <i class="fas fa-shopping-cart"
+                style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 24px;"></i>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything yet.</p>
+            <a href="/products.html" class="btn btn-primary" style="margin-top: 24px;">Start Shopping</a>
+        </div>
+
+        <div id="loading" class="loading-spinner"></div>
+
+        <!-- Checkout Modal -->
+        <div id="checkout-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeCheckoutModal()">&times;</span>
+
+                <div id="modal-step-1">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="margin: 0;">Step 1: Shipping Address</h3>
+                        <span class="badge" style="margin: 0;">1/2</span>
+                    </div>
+                    <textarea id="modal-shipping-address" rows="4"
+                        style="width: 100%; padding: 12px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0,0,0,0.2); color: var(--text-primary); margin-bottom: 24px; font-family: inherit; resize: vertical;"
+                        placeholder="Enter your full shipping address..."></textarea>
+
+                    <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem;"
+                        onclick="modalNextStep()">Continue to Payment <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div id="modal-step-2" style="display: none;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="margin: 0;">Step 2: Payment Options</h3>
+                        <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;"
+                            onclick="modalPrevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                    </div>
+
+                    <div class="payment-options"
+                        style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                        <label
+                            style="cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--border-radius-sm); background: rgba(0,0,0,0.2);">
+                            <input type="radio" name="modal_payment_method" value="card" checked>
+                            <i class="fas fa-credit-card" style="color: var(--accent-color); font-size: 1.2rem;"></i>
+                            <span style="font-weight: 500;">Credit/Debit Card</span>
+                        </label>
+                        <label
+                            style="cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--border-radius-sm); background: rgba(0,0,0,0.2);">
+                            <input type="radio" name="modal_payment_method" value="cod">
+                            <i class="fas fa-money-bill-wave" style="color: var(--success); font-size: 1.2rem;"></i>
+                            <span style="font-weight: 500;">Cash on Delivery</span>
+                        </label>
+                    </div>
+
+                    <div
+                        style="padding: 16px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(99, 102, 241, 0.3);">
+                        <input type="checkbox" id="modal-add-bag" value="yes"
+                            style="cursor: pointer; width: 18px; height: 18px;">
+                        <label for="modal-add-bag" style="cursor: pointer; font-weight: 500; flex-grow: 1;">Add a
+                            Premium Gift Bag (+₹500)</label>
+                        <i class="fas fa-gift" style="color: var(--accent-color); font-size: 1.2rem;"></i>
+                    </div>
+
+                    <button class="btn btn-primary checkout-btn" onclick="submitModalCheckout()"
+                        style="margin-top: 0; width: 100%; font-size: 1.1rem; padding: 14px;">Complete Order</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = auth.getUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            const cartContent = document.getElementById('cart-content');
+            const emptyCartMsg = document.getElementById('empty-cart-message');
+            const loading = document.getElementById('loading');
+            const itemsList = document.getElementById('cart-items-list');
+
+            try {
+                // Fetch cart items
+                const cartRes = await fetch(`/api/cart`);
+                if (cartRes.status === 401) return auth.handleSessionTimeout();
+                const cart = await cartRes.json();
+
+                if (cart.length === 0) {
+                    loading.style.display = 'none';
+                    emptyCartMsg.style.display = 'block';
+                    return;
+                }
+
+                let subtotal = 0;
+                let html = '';
+
+                cart.forEach(cartItem => {
+                    const itemTotal = cartItem.price * cartItem.quantity;
+                    subtotal += itemTotal;
+
+                    html += `
+                        <div class="cart-item">
+                            <img src="${cartItem.image}" alt="${cartItem.name}" class="item-img">
+                            <div class="item-details">
+                                <div class="item-title">${cartItem.name}</div>
+                                <div class="item-price">₹${cartItem.price.toLocaleString('en-IN')} x ${cartItem.quantity}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="remove-btn" onclick="removeFromCart('${cartItem.productId}')" aria-label="Remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                itemsList.innerHTML = html;
+                document.getElementById('subtotal-amount').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+                document.getElementById('total-amount').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+
+                loading.style.display = 'none';
+                cartContent.style.display = 'grid';
+
+            } catch (error) {
+                console.error("Error loading cart", error);
+                loading.style.display = 'none';
+                emptyCartMsg.innerHTML = '<h2>Failed to load cart</h2>';
+                emptyCartMsg.style.display = 'block';
+            }
+        });
+
+        async function removeFromCart(productId) {
+            try {
+                const res = await fetch(`/api/cart/${productId}`, { method: 'DELETE' });
+                if (res.status === 401) return auth.handleSessionTimeout();
+                window.location.reload(); // simple reload to reflect changes
+            } catch (e) { console.error('Error removing item', e); }
+        }
+
+        function openCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'block';
+            document.getElementById('modal-step-1').style.display = 'block';
+            document.getElementById('modal-step-2').style.display = 'none';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        function modalNextStep() {
+            const address = document.getElementById('modal-shipping-address').value.trim();
+            if (!address) {
+                alert('Please enter a shipping address before continuing.');
+                return;
+            }
+            document.getElementById('modal-step-1').style.display = 'none';
+            document.getElementById('modal-step-2').style.display = 'block';
+        }
+
+        function modalPrevStep() {
+            document.getElementById('modal-step-2').style.display = 'none';
+            document.getElementById('modal-step-1').style.display = 'block';
+        }
+
+        async function submitModalCheckout() {
+            try {
+                const address = document.getElementById('modal-shipping-address').value.trim();
+                const addBag = document.getElementById('modal-add-bag').checked;
+                const paymentMethod = document.querySelector('input[name="modal_payment_method"]:checked').value;
+
+                // Final safety check
+                if (!address) {
+                    modalPrevStep();
+                    alert('Please enter a shipping address.');
+                    return;
+                }
+
+                const res = await fetch('/api/cart/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address, addBag, paymentMethod })
+                });
+
+                if (res.status === 401) return auth.handleSessionTimeout();
+
+                if (res.ok) {
+                    alert('Checkout successful! Thank you for your purchase.');
+                    window.location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Checkout failed');
+                }
+            } catch (e) {
+                console.error('Error during checkout', e);
+                alert('Checkout failed');
+            }
+        }
+
+        // Close modal if clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('checkout-modal');
+            if (event.target == modal) {
+                closeCheckoutModal();
+            }
+        }
+    </script>
+</body>
+
+</html>
